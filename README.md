@@ -1,4 +1,3 @@
-# NCRP_Complaint-Reading-Updating-Tool
 # NCRP Automation Tool
 
 A local offline tool to extract data from NCRP (National Cyber Crime Reporting Portal) PDF complaints, store them in a database, and generate automated Request Letters for banks and social media platforms.
@@ -9,7 +8,7 @@ A local offline tool to extract data from NCRP (National Cyber Crime Reporting P
 * **Search & Filter:** Search by CSR/Ack Number and filter by Solved/Unsolved status.
 * **Request Letter Generator:** One-click generation of formal letters to Banks or Social Media platforms.
 * **Offline Database:** Stores all data locally in a SQLite database.
-* **Download:**You can Download the complaints as a excel sheet.
+* **Download:** You can Download the complaints as a excel sheet.
 
 ## How to Run (No Installation Required)
 
