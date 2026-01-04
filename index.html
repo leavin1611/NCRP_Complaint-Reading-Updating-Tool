@@ -3,114 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NCRP Complaint Upload Portal</title>
+    <title>NCRP Automation Tool</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .drag-active { border-color: #2563eb; background-color: #eff6ff; }
-        .table-container::-webkit-scrollbar { height: 8px; }
-        .table-container::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
-        .modal { transition: opacity 0.25s ease; }
-        body.modal-active { overflow-x: hidden; overflow-y: visible !important; }
+        #details-modal { transition: opacity 0.2s ease-in-out; }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="bg-gray-100 min-h-screen">
 
-    <!-- Header -->
-    <header class="bg-blue-900 text-white shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="showUploadView()">
-                <i class="fas fa-shield-alt text-3xl text-yellow-400"></i>
-                <div>
-                    <h1 class="text-xl font-bold tracking-wide">NCRP INTELLIGENCE UNIT</h1>
-                    <p class="text-xs text-blue-200">National Cyber Crime Reporting Portal Automation</p>
+    <nav class="bg-white shadow-md mb-8 sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center gap-3">
+                    <div class="bg-blue-600 text-white p-2 rounded-lg"><i class="fas fa-shield-alt text-xl"></i></div>
+                    <h1 class="text-xl font-bold text-gray-800 tracking-tight">NCRP Automation Tool</h1>
+                </div>
+
+                <div class="flex space-x-4">
+                    <button onclick="switchView('upload')" id="nav-upload" class="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg font-medium transition hover:bg-blue-100 border border-transparent">
+                        <i class="fas fa-cloud-upload-alt"></i> Upload
+                    </button>
+                    <button onclick="switchView('database')" id="nav-db" class="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-blue-600 font-medium transition rounded-lg border border-transparent">
+                        <i class="fas fa-database"></i> Database
+                    </button>
                 </div>
             </div>
-            <nav class="hidden md:flex space-x-6 text-sm font-medium items-center">
-                <button onclick="showUploadView()" class="hover:text-yellow-400 transition flex items-center gap-2"><i class="fas fa-upload"></i> Upload</button>
-                <button onclick="showDatabaseView()" class="hover:text-yellow-400 transition flex items-center gap-2"><i class="fas fa-database"></i> Database</button>
-            </nav>
         </div>
-    </header>
+    </nav>
 
-    <!-- Main Content -->
-    <main class="flex-grow container mx-auto px-4 py-8 relative">
+    <div class="container mx-auto px-4 pb-12">
 
-        <!-- VIEW 1: UPLOAD -->
-        <div id="upload-view" class="flex flex-col items-center justify-center fade-in">
-            <div class="text-center mb-10">
-                <h2 class="text-3xl font-bold text-gray-800 mb-2">Upload Complaint PDF</h2>
-                <p class="text-gray-500 max-w-lg mx-auto">Upload the PDF report. The system will extract suspect data and update the database.</p>
-            </div>
+        <div id="upload-view" class="max-w-3xl mx-auto">
+            <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-gray-800">Upload Complaints</h2>
+                    <p class="text-gray-500 mt-2">Drag & drop PDF files to extract data automatically.</p>
+                </div>
 
-            <div class="bg-white w-full max-w-2xl rounded-xl shadow-xl overflow-hidden border border-gray-100 mb-10">
-                <div id="drop-zone" class="p-10 border-2 border-dashed border-gray-300 rounded-t-xl bg-gray-50 flex flex-col items-center justify-center transition-colors duration-300 cursor-pointer hover:bg-blue-50 hover:border-blue-300">
-                    <div class="mb-4 p-4 bg-blue-100 rounded-full text-blue-600"><i class="fas fa-cloud-upload-alt text-4xl"></i></div>
-                    <h3 class="text-lg font-semibold text-gray-700 mb-1">Drag & Drop your PDF here</h3>
+                <div id="drop-zone" class="border-2 border-dashed border-gray-300 rounded-xl p-10 text-center cursor-pointer hover:border-blue-400 transition bg-gray-50 group">
                     <input type="file" id="file-input" class="hidden" accept=".pdf" multiple>
-                    <button onclick="document.getElementById('file-input').click()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow transition transform hover:scale-105">Browse Files</button>
-                    <p id="file-name" class="mt-4 text-sm font-medium text-gray-700 hidden">Selected: <span class="text-blue-600"></span></p>
+                    <div class="text-blue-500 mb-4 text-5xl group-hover:scale-110 transition-transform"><i class="fas fa-file-pdf"></i></div>
+                    <p class="text-gray-700 font-medium text-lg">Click to browse or drag files here</p>
                 </div>
 
-                <div class="p-6 bg-white">
-                    <div id="progress-container" class="hidden mb-6">
-                        <div class="flex justify-between mb-1"><span class="text-xs font-semibold text-blue-700 uppercase">Processing...</span></div>
-                        <div class="w-full bg-gray-200 rounded-full h-2.5"><div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div></div>
-                    </div>
-                    <div class="flex justify-end space-x-3">
-                        <button id="reset-btn" class="hidden px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">Clear</button>
-                        <button id="upload-btn" disabled class="px-6 py-2 text-sm font-bold text-white bg-gray-400 rounded-lg cursor-not-allowed transition duration-300">Upload & Analyze</button>
-                    </div>
-                    <div id="status-message" class="mt-4 hidden p-4 rounded-lg text-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4"></div>
+                <div id="file-name" class="mt-4 text-center text-gray-700 font-medium hidden">
+                    <span class="bg-gray-100 px-3 py-1 rounded text-sm border"></span>
                 </div>
+
+                <div class="mt-8 flex justify-center gap-4">
+                    <button id="upload-btn" disabled class="bg-gray-400 text-white px-8 py-3 rounded-lg font-bold shadow-md transition flex items-center gap-2 cursor-not-allowed">
+                        <i class="fas fa-bolt"></i> Process Files
+                    </button>
+                    <button id="reset-btn" class="hidden text-gray-500 hover:text-red-500 font-medium px-4 py-3 transition">Cancel</button>
+                </div>
+
+                <div id="progress-container" class="hidden mt-6">
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                        <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+                    </div>
+                    <p class="text-center text-xs text-gray-500 mt-2">Processing...</p>
+                </div>
+
+                <div id="status-message" class="hidden mt-6 text-sm"></div>
             </div>
         </div>
 
-        <!-- VIEW 2: DATABASE -->
-        <div id="database-view" class="hidden w-full max-w-6xl mx-auto">
+        <div id="database-view" class="hidden w-full max-w-7xl mx-auto">
             
             <div class="flex flex-col md:flex-row justify-between items-end mb-6 gap-4">
-                
-                <h2 class="text-2xl font-bold text-gray-800">Complaint Database</h2>
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Complaint Database</h2>
+                    <p class="text-sm text-gray-500">Manage and track reported cases</p>
+                </div>
 
                 <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
-                    
-                    <div class="flex gap-2">
-                        <select id="status-filter" class="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+                    <div class="flex gap-2 bg-white p-1 rounded-lg shadow-sm border border-gray-200">
+                        <select id="status-filter" class="px-3 py-2 bg-transparent text-sm focus:outline-none text-gray-700 font-medium border-r border-gray-200">
                             <option value="all">All Status</option>
                             <option value="Unsolved">Unsolved</option>
                             <option value="Solved">Solved</option>
                         </select>
-
-                        <div class="flex rounded-md shadow-sm">
-                            <select id="search-type" class="px-3 py-2 bg-gray-100 border border-gray-300 rounded-l-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="NCRP Acknowledgement No.">Ack Number</option>
-                                <option value="CSR No">CSR Number</option>
-                            </select>
-                            <input type="text" id="search-input" placeholder="Search..." class="px-4 py-2 border-t border-b border-r border-gray-300 rounded-r-lg text-sm w-48 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
+                        <select id="search-type" class="px-3 py-2 bg-transparent text-sm focus:outline-none text-gray-700 border-r border-gray-200">
+                            <option value="CSR No">CSR Number</option>
+                            <option value="NCRP Acknowledgement No.">Ack Number</option>
+                        </select>
+                        <input type="text" id="search-input" placeholder="Search..." class="px-3 py-2 text-sm focus:outline-none w-48">
                     </div>
-
-                    <button id="export-btn" class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 shadow flex items-center justify-center">
-                        <i class="fas fa-file-excel mr-2"></i> Export All
+                    <button id="export-btn" class="px-5 py-2 bg-green-600 text-white rounded-lg text-sm font-bold hover:bg-green-700 shadow flex items-center justify-center transition">
+                        <i class="fas fa-file-csv mr-2"></i> Export All
                     </button>
                 </div>
             </div>
 
             <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-                <div class="overflow-x-auto table-container">
+                <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-gray-50 border-b border-gray-200 text-xs uppercase text-gray-500 font-semibold">
                                 <th class="p-4">Ack Number</th>
-                                <th class="p-4">CSR No</th> <th class="p-4">Category</th>
-                                <th class="p-4">Sub Category</th>
+                                <th class="p-4">CSR No</th>
+                                <th class="p-4">Category</th>
+                                <th class="p-4">Platform</th>
                                 <th class="p-4">Incident Date</th>
                                 <th class="p-4">Total Loss</th>
-                                <th class="p-4">Status</th>
-                                <th class="p-4 text-center">View</th>
+                                <th class="p-4 text-center">Status</th>
+                                <th class="p-4 text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody id="database-body" class="text-sm text-gray-700 divide-y divide-gray-100">
@@ -119,33 +119,196 @@
                 </div>
             </div>
         </div>
-    </main>
 
-    <!-- MODAL -->
-    <div id="details-modal" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50">
-        <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50" onclick="closeModal()"></div>
-        <div class="modal-container bg-white w-11/12 md:max-w-3xl mx-auto rounded-lg shadow-2xl z-50 overflow-y-auto max-h-[90vh]">
-            <div class="modal-content py-4 text-left px-6">
-                <div class="flex justify-between items-center pb-3 border-b border-gray-200">
-                    <p class="text-2xl font-bold text-blue-900">Extracted Data</p>
-                    <div class="modal-close cursor-pointer z-50" onclick="closeModal()"><i class="fas fa-times text-gray-500 hover:text-gray-800 text-xl"></i></div>
-                </div>
-                <div id="modal-body-content" class="my-5 grid grid-cols-1 gap-4 text-sm">
-                    <!-- Content injected by JS -->
-                </div>
-                <div class="flex justify-end pt-2">
-                    <button onclick="closeModal()" class="px-4 py-2 bg-gray-500 rounded-lg text-white">Close</button>
-                </div>
+    </div>
+
+    <div id="details-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 pointer-events-none z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+            <div class="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
+                <h3 class="text-lg font-bold text-gray-800">Complaint Details</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-red-500 transition text-2xl">&times;</button>
+            </div>
+            <div id="modal-body-content" class="p-6 overflow-y-auto flex-1 text-sm space-y-4"></div>
+            <div class="bg-gray-50 px-6 py-3 border-t text-right">
+                <button onclick="closeModal()" class="text-gray-600 hover:text-gray-800 font-medium text-sm">Close</button>
             </div>
         </div>
     </div>
 
     <script>
+        // --- GLOBAL VARIABLES ---
         let extractedDataList = [];
         let selectedFiles = [];
+        let currentDetailIndex = null;
+
+        // --- NAVIGATION LOGIC (CRASH PROOF) ---
+        function switchView(viewName) {
+            const uploadView = document.getElementById('upload-view');
+            const databaseView = document.getElementById('database-view');
+            const navUpload = document.getElementById('nav-upload');
+            const navDb = document.getElementById('nav-db');
+
+            if(viewName === 'upload') {
+                uploadView.classList.remove('hidden');
+                databaseView.classList.add('hidden');
+                
+                navUpload.classList.add('bg-blue-50', 'text-blue-700');
+                navDb.classList.remove('bg-blue-50', 'text-blue-700');
+            } else {
+                uploadView.classList.add('hidden');
+                databaseView.classList.remove('hidden');
+                
+                navDb.classList.add('bg-blue-50', 'text-blue-700');
+                navUpload.classList.remove('bg-blue-50', 'text-blue-700');
+            }
+        }
+        
+        // Expose to window for onclick events
+        window.switchView = switchView;
+        window.showDatabaseView = () => switchView('database'); // Alias for compatibility
+        window.showUploadView = () => switchView('upload');
 
         document.addEventListener('DOMContentLoaded', () => {
             // Elements
+            const dbBody = document.getElementById('database-body');
+            const searchInput = document.getElementById('search-input');
+            const searchType = document.getElementById('search-type');
+            const statusFilter = document.getElementById('status-filter');
+            
+            // --- LOAD DATA ---
+            fetchDatabase();
+            
+            async function fetchDatabase() {
+                try {
+                    const response = await fetch('http://127.0.0.1:5000/get_database');
+                    const result = await response.json();
+                    if(result.status === 'success') {
+                        extractedDataList = result.data;
+                        extractedDataList.forEach(item => { if(!item.status) item.status = "Unsolved"; });
+                        renderTable(extractedDataList);
+                    }
+                } catch (e) { console.error("DB Connection Failed", e); }
+            }
+
+            // --- FILTERING ---
+            function applyFilters() {
+                const query = searchInput.value.toLowerCase().trim();
+                const filterKey = searchType.value;
+                const statusKey = statusFilter.value;
+
+                const filteredData = extractedDataList.filter(item => {
+                    const val = String(item[filterKey] || "").toLowerCase();
+                    const matchesSearch = val.includes(query);
+                    const matchesStatus = (statusKey === "all") ? true : (item.status === statusKey);
+                    return matchesSearch && matchesStatus;
+                });
+                renderTable(filteredData);
+            }
+            if(searchInput) searchInput.addEventListener('input', applyFilters);
+            if(statusFilter) statusFilter.addEventListener('change', applyFilters);
+
+            // --- RENDER TABLE ---
+            function renderTable(data) {
+                dbBody.innerHTML = "";
+                const displayData = (data === extractedDataList) ? [...data].reverse() : data;
+
+                if(displayData.length === 0) {
+                    dbBody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-gray-500 italic">No complaints found.</td></tr>`;
+                    return;
+                }
+
+                displayData.forEach((row) => {
+                    const originalIndex = extractedDataList.indexOf(row);
+                    const currentStatus = row.status || "Unsolved";
+                    
+                    const statusBtnHTML = currentStatus === "Solved" 
+                        ? `<button onclick="toggleStatus(${originalIndex})" class="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 border border-green-200 w-24">Solved <i class="fas fa-check ml-1"></i></button>`
+                        : `<button onclick="toggleStatus(${originalIndex})" class="px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-200 w-24">Unsolved <i class="fas fa-times ml-1"></i></button>`;
+
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-gray-50 transition border-b border-gray-100";
+                    tr.innerHTML = `
+                        <td class="p-4 font-mono text-blue-600 font-bold">${row["NCRP Acknowledgement No."] || '-'}</td>
+                        <td class="p-4 font-mono text-gray-600">${row["CSR No"] || '-'}</td>
+                        <td class="p-4 text-xs font-medium text-gray-500">${row["Category"] || '-'}</td>
+                        <td class="p-4 text-sm font-semibold text-blue-800">${row["Social Media Platform"] || '-'}</td>
+                        <td class="p-4 text-sm">${row["Incident Date"] || '-'}</td>
+                        <td class="p-4 font-bold text-red-600">${row["Total Amount Loss"] || '-'}</td>
+                        <td class="p-4 text-center">${statusBtnHTML}</td>
+                        <td class="p-4 text-center">
+                            <button onclick="viewDetails(${originalIndex})" class="bg-gray-100 hover:bg-blue-600 hover:text-white text-gray-600 px-3 py-1 rounded text-xs font-bold transition border">View</button>
+                        </td>
+                    `;
+                    dbBody.appendChild(tr);
+                });
+            }
+
+            // --- STATUS TOGGLE ---
+            window.toggleStatus = function(index) {
+                const item = extractedDataList[index];
+                item.status = (item.status === "Solved") ? "Unsolved" : "Solved";
+                applyFilters();
+            };
+
+            // --- VIEW DETAILS / DELETE / LETTER ---
+            window.viewDetails = function(index) {
+                currentDetailIndex = index;
+                const data = extractedDataList[index];
+                const content = document.getElementById('modal-body-content');
+                
+                const orderedKeys = [
+                     "NCRP Acknowledgement No.", "CSR No", "Category", "Sub Category", 
+                     "Incident Date", "Incident Time", "Complaint Date", "Complaint Name",
+                     "Complaint Address", "Complaint Phone No.", "Complaint Mail Id",
+                     "Suspect phone No.","Social Media Platform","Suspect social Media Id", "Total Amount Loss", "Additional details"
+                ];
+
+                let html = "";
+                orderedKeys.forEach(key => {
+                    html += `<div class="grid grid-cols-3 border-b border-gray-100 pb-2 items-start last:border-0"><span class="font-bold text-gray-500 col-span-1 text-xs uppercase tracking-wide mt-1">${key}</span><span class="col-span-2 text-gray-800 break-words font-medium">${data[key] || "-"}</span></div>`;
+                });
+
+                // Buttons: Delete & Generate Letter
+                html += `
+                    <div class="mt-6 pt-6 border-t border-gray-200 flex justify-between items-center">
+                        <button onclick="deleteComplaint(${data['db_id']})" class="text-red-600 hover:text-red-800 font-bold text-sm flex items-center gap-2 px-4 py-2 hover:bg-red-50 rounded transition border border-transparent hover:border-red-200">
+                            <i class="fas fa-trash-alt"></i> Delete Complaint
+                        </button>
+                        
+                        <button onclick="generateRequestLetter()" class="flex items-center gap-2 bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-6 rounded-lg shadow-lg transition transform hover:scale-105">
+                            <i class="fas fa-file-pdf"></i> Generate Request Letter
+                        </button>
+                    </div>
+                `;
+
+                content.innerHTML = html;
+                document.getElementById('details-modal').classList.remove('opacity-0', 'pointer-events-none');
+            };
+
+            window.closeModal = function() {
+                document.getElementById('details-modal').classList.add('opacity-0', 'pointer-events-none');
+            };
+
+            // --- DELETE LOGIC ---
+            window.deleteComplaint = async function(id) {
+                if(!confirm("Are you sure you want to PERMANENTLY delete this complaint?")) return;
+                try {
+                    const response = await fetch('http://127.0.0.1:5000/delete_complaint', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: id })
+                    });
+                    const result = await response.json();
+                    if(result.status === 'success') {
+                        closeModal();
+                        fetchDatabase(); 
+                    } else {
+                        alert("Error deleting: " + result.message);
+                    }
+                } catch(e) { alert("Server Error"); }
+            };
+
+            // --- UPLOAD LOGIC ---
             const dropZone = document.getElementById('drop-zone');
             const fileInput = document.getElementById('file-input');
             const fileNameDisplay = document.getElementById('file-name');
@@ -154,131 +317,16 @@
             const progressContainer = document.getElementById('progress-container');
             const progressBar = document.getElementById('progress-bar');
             const statusMessage = document.getElementById('status-message');
-            const dbBody = document.getElementById('database-body');
-            const uploadView = document.getElementById('upload-view');
-            const databaseView = document.getElementById('database-view');
-            const exportBtn = document.getElementById('export-btn');
-            
-            // Search & Filter Elements
-            const searchInput = document.getElementById('search-input');
-            const searchType = document.getElementById('search-type');
-            const statusFilter = document.getElementById('status-filter'); // New Filter
-
-            // --- 1. LOAD DATABASE ---
-            fetchDatabase();
-
-            async function fetchDatabase() {
-                try {
-                    const response = await fetch('http://127.0.0.1:5000/get_database');
-                    const result = await response.json();
-                    if(result.status === 'success') {
-                        extractedDataList = result.data;
-                        // Initialize 'status' if missing from old data
-                        extractedDataList.forEach(item => {
-                            if(!item.status) item.status = "Unsolved";
-                        });
-                        renderTable(extractedDataList);
-                    }
-                } catch (e) { console.log("DB Connection Error"); }
-            }
-
-            // --- 2. SEARCH & FILTER LOGIC ---
-            function applyFilters() {
-                const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
-                const filterKey = searchType ? searchType.value : "CSR No";
-                const statusKey = statusFilter ? statusFilter.value : "all";
-
-                const filteredData = extractedDataList.filter(item => {
-                    // 1. Search Check
-                    const val = String(item[filterKey] || "").toLowerCase();
-                    const matchesSearch = val.includes(query);
-                    
-                    // 2. Status Check
-                    let matchesStatus = true;
-                    if(statusKey !== "all") {
-                        // Default to Unsolved if undefined
-                        const itemStatus = item.status || "Unsolved";
-                        matchesStatus = (itemStatus === statusKey);
-                    }
-
-                    return matchesSearch && matchesStatus;
-                });
-
-                renderTable(filteredData);
-            }
-
-            if(searchInput) searchInput.addEventListener('input', applyFilters);
-            if(statusFilter) statusFilter.addEventListener('change', applyFilters);
-
-            // --- 3. TOGGLE STATUS FUNCTION ---
-            window.toggleStatus = function(index) {
-                // Find item in the main list
-                const item = extractedDataList[index];
-                
-                // Switch Status
-                if (item.status === "Solved") {
-                    item.status = "Unsolved";
-                } else {
-                    item.status = "Solved";
-                }
-
-                // Ideally, you would send a POST request to Python here to save the change permanently.
-                // For now, we update the local view immediately.
-                
-                // Re-apply filters to refresh the view (item might disappear if filter is active)
-                applyFilters();
-            };
-
-            // --- 4. RENDER TABLE ---
-            function renderTable(data) {
-                dbBody.innerHTML = "";
-                // Reverse simply for display order (Newest first)
-                const displayData = (data === extractedDataList) ? [...data].reverse() : data;
-
-                if(displayData.length === 0) {
-                    dbBody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-gray-500">No complaints found.</td></tr>`;
-                    return;
-                }
-
-                displayData.forEach((row) => {
-                    // Get original index for toggle/view functions
-                    const originalIndex = extractedDataList.indexOf(row);
-                    const currentStatus = row.status || "Unsolved";
-                    
-                    // Status Button Styles
-                    let statusBtnHTML = "";
-                    if (currentStatus === "Solved") {
-                        statusBtnHTML = `<button onclick="toggleStatus(${originalIndex})" class="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 hover:bg-green-200 border border-green-200 transition">Solved <i class="fas fa-check"></i></button>`;
-                    } else {
-                        statusBtnHTML = `<button onclick="toggleStatus(${originalIndex})" class="px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700 hover:bg-red-200 border border-red-200 transition">Unsolved <i class="fas fa-times"></i></button>`;
-                    }
-
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-gray-50 transition border-b border-gray-100";
-                    tr.innerHTML = `
-                        <td class="p-4 font-mono text-blue-600 font-bold">${row["NCRP Acknowledgement No."] || '-'}</td>
-                        <td class="p-4 font-mono text-gray-600">${row["CSR No"] || '-'}</td>
-                        <td class="p-4">${row["Category"] || '-'}</td>
-                        <td class="p-4 text-gray-600">${row["Sub Category"] || '-'}</td>
-                        <td class="p-4">${row["Incident Date"] || '-'}</td>
-                        <td class="p-4 font-bold text-red-600">${row["Total Amount Loss"] || '-'}</td>
-                        <td class="p-4 text-center">${statusBtnHTML}</td>
-                        <td class="p-4 text-center">
-                            <button onclick="viewDetails(${originalIndex})" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded text-xs border">View</button>
-                        </td>
-                    `;
-                    dbBody.appendChild(tr);
-                });
-            }
-
-            // --- STANDARD NAVIGATION & UPLOAD LOGIC ---
-            window.showUploadView = function() { databaseView.classList.add('hidden'); uploadView.classList.remove('hidden'); };
-            window.showDatabaseView = function() { uploadView.classList.add('hidden'); databaseView.classList.remove('hidden'); };
 
             if(dropZone) {
                 dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-active'); });
                 dropZone.addEventListener('dragleave', (e) => { e.preventDefault(); dropZone.classList.remove('drag-active'); });
-                dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('drag-active'); if(e.dataTransfer.files.length) handleFiles(e.dataTransfer.files); });
+                dropZone.addEventListener('drop', (e) => { 
+                    e.preventDefault(); 
+                    dropZone.classList.remove('drag-active'); 
+                    if(e.dataTransfer.files.length) handleFiles(e.dataTransfer.files); 
+                });
+                dropZone.addEventListener('click', () => fileInput.click());
             }
             if(fileInput) fileInput.addEventListener('change', () => { if(fileInput.files.length) handleFiles(fileInput.files); });
 
@@ -293,25 +341,19 @@
                 resetBtn.classList.remove('hidden');
             }
 
-            // --- BULK UPLOAD LOGIC (With Detailed Error Reporting) ---
-            if(uploadBtn) uploadBtn.addEventListener('click', async () => {
+            if(uploadBtn) uploadBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
                 if(selectedFiles.length === 0) return;
                 
                 uploadBtn.disabled = true;
                 progressContainer.classList.remove('hidden');
                 statusMessage.classList.add('hidden'); 
                 
-                // Store actual filenames instead of just numbers
-                let successFiles = [];
-                let duplicateFiles = [];
-                let failedFiles = [];
+                let successFiles = [], duplicateFiles = [], failedFiles = [];
 
                 for (let i = 0; i < selectedFiles.length; i++) {
                     const file = selectedFiles[i];
-                    
-                    // Update Progress
-                    const percent = Math.round(((i + 1) / selectedFiles.length) * 100);
-                    progressBar.style.width = `${percent}%`;
+                    progressBar.style.width = `${Math.round(((i + 1) / selectedFiles.length) * 100)}%`;
                     
                     const formData = new FormData();
                     formData.append('file', file);
@@ -324,10 +366,8 @@
                             extractedDataList = [...extractedDataList, ...result.data];
                             successFiles.push(file.name);
                         } else if (result.status === 'duplicate') {
-                            // Track duplicate filename
                             duplicateFiles.push(file.name);
                         } else {
-                            // Track failed filename
                             failedFiles.push(`${file.name} (${result.message})`);
                         }
                     } catch (error) {
@@ -336,172 +376,210 @@
                 }
                 
                 setTimeout(() => { progressContainer.classList.add('hidden'); }, 500);
-                
-                // Refresh Status on items if needed
                 extractedDataList.forEach(item => { if(!item.status) item.status = "Unsolved"; });
                 renderTable(extractedDataList);
 
-                // --- BUILD DETAILED STATUS REPORT ---
-                statusMessage.className = "mt-4 p-4 rounded-lg bg-gray-50 border border-gray-200 block";
+                // SUMMARY REPORT
+                statusMessage.className = "mt-6 p-5 rounded-lg bg-white border border-gray-200 shadow-sm block text-left";
+                let msg = `<h4 class="font-bold text-gray-800 mb-2 border-b pb-2">Upload Summary</h4>`;
                 
-                let msg = `<div class="font-bold text-lg mb-2">Process Complete</div>`;
+                if(successFiles.length > 0) msg += `<div class="text-green-700 mb-1 flex items-center"><i class="fas fa-check-circle mr-2"></i> <b>${successFiles.length} Saved Successfully</b></div>`;
                 
-                // 1. Success Message
-                if(successFiles.length > 0) {
-                    msg += `<div class="text-green-700 mb-1">✅ <b>${successFiles.length} Saved:</b> <span class="text-sm opacity-75">All good.</span></div>`;
-                }
-
-                // 2. Duplicates List (Yellow)
                 if(duplicateFiles.length > 0) {
-                    msg += `<div class="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-yellow-800">
-                                <b>⚠️ ${duplicateFiles.length} Duplicate Files (Skipped):</b>
-                                <ul class="list-disc list-inside text-sm mt-1 pl-2">
-                                    ${duplicateFiles.map(name => `<li>${name}</li>`).join('')}
-                                </ul>
+                    msg += `<div class="mt-3 text-yellow-700 text-sm">
+                                <div class="font-bold flex items-center"><i class="fas fa-exclamation-triangle mr-2"></i> ${duplicateFiles.length} Duplicates Skipped:</div>
+                                <ul class="list-disc list-inside pl-6 mt-1 opacity-80">${duplicateFiles.slice(0,5).map(n=>`<li>${n}</li>`).join('')} ${duplicateFiles.length > 5 ? '<li>...</li>' : ''}</ul>
                             </div>`;
                 }
 
-                // 3. Failures List (Red)
                 if(failedFiles.length > 0) {
-                    msg += `<div class="mt-2 p-2 bg-red-50 border border-red-200 rounded text-red-800">
-                                <b>❌ ${failedFiles.length} Failed Files:</b>
-                                <ul class="list-disc list-inside text-sm mt-1 pl-2">
-                                    ${failedFiles.map(name => `<li>${name}</li>`).join('')}
-                                </ul>
+                    msg += `<div class="mt-3 text-red-700 text-sm">
+                                <div class="font-bold flex items-center"><i class="fas fa-times-circle mr-2"></i> ${failedFiles.length} Failed:</div>
+                                <ul class="list-disc list-inside pl-6 mt-1 opacity-80">${failedFiles.map(n=>`<li>${n}</li>`).join('')}</ul>
                             </div>`;
                 }
 
-                msg += `<div class="mt-3"><button onclick="showDatabaseView()" class="underline text-blue-700 font-medium">View Database</button></div>`;
+                msg += `<div class="mt-4 pt-3 border-t"><button onclick="switchView('database')" class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-bold hover:bg-blue-700 transition">Go to Database</button></div>`;
                 
                 statusMessage.innerHTML = msg;
                 statusMessage.classList.remove('hidden');
             });
 
-            // --- VIEW DETAILS MODAL ---
-            let currentDetailIndex = null;
-            window.viewDetails = function(index) {
-                 const data = extractedDataList[index]; 
-                 currentDetailIndex = index;
-                 const content = document.getElementById('modal-body-content');
-                 const orderedKeys = ["NCRP Acknowledgement No.", "CSR No", "Category", "Sub Category", "Incident Date", "Incident Time", "Complaint Date", "Complaint Name", "Complaint Address", "Complaint Phone No.", "Complaint Mail Id", "Suspect phone No.", "Suspect social Media Id", "Total Amount Loss", "Additional details"];
-                 let html = "";
-                 orderedKeys.forEach(key => {
-                     html += `<div class="grid grid-cols-3 border-b pb-2 items-start"><span class="font-bold text-gray-600 col-span-1">${key}:</span><span class="col-span-2 text-gray-800 break-words font-medium">${data[key] || ""}</span></div>`;
-                 });
-                 html += `<div class="mt-6 pt-4 border-t border-gray-200 flex justify-center"><button onclick="generateRequestLetter()" class="flex items-center gap-2 bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-6 rounded-lg shadow-lg transition transform hover:scale-105"><i class="fas fa-file-pdf"></i> Generate Request Letter</button></div>`;
-                 content.innerHTML = html;
-                 document.getElementById('details-modal').classList.remove('opacity-0', 'pointer-events-none');
-            };
+            if(resetBtn) resetBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                fileInput.value = ''; selectedFiles = []; fileNameDisplay.classList.add('hidden'); statusMessage.classList.add('hidden'); progressContainer.classList.add('hidden'); 
+                uploadBtn.disabled = true; uploadBtn.classList.add('bg-gray-400', 'cursor-not-allowed'); uploadBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'cursor-pointer'); 
+                resetBtn.classList.add('hidden');
+            });
 
-            window.closeModal = function() { document.getElementById('details-modal').classList.add('opacity-0', 'pointer-events-none'); };
-
-            window.generateRequestLetter = function() {
-                const data = extractedDataList[currentDetailIndex];
-                const today = new Date().toLocaleDateString('en-IN');
-                const category = (data["Category"] || "").toLowerCase();
-                const totalLoss = parseFloat((data["Total Amount Loss"] || "0").replace(/,/g, ''));
-                let letterHTML = "";
-
-                if (category.includes("financial") || category.includes("banking") || totalLoss > 0) {
-                     letterHTML = `<html><head><title>Request Letter - Bank</title><style>body{font-family:'Times New Roman';padding:40px;line-height:1.6;max-width:800px;margin:0 auto}.header{font-weight:bold;margin-bottom:20px}.table-container{width:100%;border-collapse:collapse;margin:20px 0}th,td{border:1px solid black;padding:8px}button{display:block;margin-top:20px}@media print{button{display:none}}</style></head><body contenteditable="true"><div style="text-align:center;font-weight:bold;margin-bottom:10px;">National Cyber Crime Reporting Portal</div><div class="header">From<br>Inspector of Police,<br>Cyber Crime Police Station,<br>The Nilgiris.</div><div class="header">To<br>The Nodal Officer,<br>[ENTER BANK NAME]</div><div style="margin-bottom:20px;"><strong>Sub:</strong> Financial Fraud - Provide Beneficiary Account details for Investigation regards.<br><strong>Ref:</strong> Nilgiris District Cyber Crime Police Station CSR No. <strong>${data["CSR No"] || "____"}</strong>, Dated: ${today}<br><strong>NCRP Ack No:</strong> <strong>${data["NCRP Acknowledgement No."]}</strong></div><p>Sir/Madam,<br>As per above cited Reference a case has been registered in Nilgiris Cyber Crime Police Station. The fraudulent transaction account details are as follows:</p><table class="table-container"><thead><tr style="background:#f0f0f0"><th>S.No</th><th>Bank Name</th><th>Account No</th><th>IFSC Code</th><th>Transaction ID / Amount</th></tr></thead><tbody><tr><td>1</td><td>[Enter Bank]</td><td>${data["Suspect phone No."] || data["Suspect Account No."] || "N/A"}</td><td>[Enter IFSC]</td><td>Rs. ${data["Total Amount Loss"]}</td></tr></tbody></table><p>It is requested to provide the following details for investigation purpose:</p><ul><li>Account holder details (KYC)</li><li>Account statements</li><li>Linked mobile numbers & emails</li><li>Transaction history</li><li>IP logs (if available)</li></ul><div style="margin-top:50px;float:right;text-align:center;font-weight:bold">Inspector of Police<br>Cyber Crime Police Station<br>The Nilgiris.</div><button onclick="window.print()" style="position:fixed;bottom:20px;right:20px;padding:10px 20px;background:blue;color:white;border:none;border-radius:5px;cursor:pointer;">Save as PDF / Print</button></body></html>`;
-                } else {
-                     const suspectId = data["Suspect social Media Id"] || "[Enter Platform Name]";
-                     letterHTML = `<html><head><title>Request Letter - Social Media</title><style>body{font-family:'Times New Roman';padding:40px;line-height:1.6;max-width:800px;margin:0 auto}.header{font-weight:bold;margin-bottom:20px}.content{margin-bottom:20px;text-align:justify}ul{list-style-type:none;padding:0}li:before{content:"-> ";font-weight:bold}@media print{button{display:none}}</style></head><body contenteditable="true"><div style="text-align:center;font-weight:bold;margin-bottom:10px;">National Cyber Crime Reporting Portal</div><div class="header">From<br>Inspector of Police,<br>Cyber Crime Police Station,<br>The Nilgiris.</div><div class="header">To<br>The Nodal Officer,<br><strong>${suspectId}</strong> (Platform)</div><div class="content"><strong>Sub:</strong> Social Media Fraud - Provide details Suspect for Investigation - reg.<br><strong>Ref:</strong> Nilgiris District Cyber Crime Police Station CSR No. <strong>${data["CSR No"] || "____"}</strong>, Dated: ${today}<br><strong>NCRP Ack No:</strong> <strong>${data["NCRP Acknowledgement No."]}</strong></div><div class="content">As per above cited Reference a case has been registered in Nilgiris Cyber Crime Police Station.<br><br><strong>Suspect ID / URL / Handle:</strong> ${data["Suspect social Media Id"] || "N/A"}<br><br>It is requested to provide the following details for investigation purpose:</div><ul><li>Registered email & phone number</li><li>Account creation date</li><li>Login IP addresses</li><li>Device details</li><li>Activity logs</li><li>Linked accounts</li></ul><div style="margin-top:50px;float:right;text-align:center;font-weight:bold">Inspector of Police<br>Cyber Crime Police Station<br>The Nilgiris.</div><button onclick="window.print()" style="position:fixed;bottom:20px;right:20px;padding:10px 20px;background:blue;color:white;border:none;border-radius:5px;cursor:pointer;">Save as PDF / Print</button></body></html>`;
-                }
-                const win = window.open('','_blank');
-                win.document.write(letterHTML);
-                win.document.close();
-            };
-
-            // --- EXPORT FUNCTION ---
-            // --- EXPORT FUNCTION (LINKED TO FILTERS) ---
-            if(exportBtn) exportBtn.addEventListener('click', () => {
-                // 1. Get Current Filter Values
-                const query = searchInput ? searchInput.value.toLowerCase().trim() : "";
-                const filterKey = searchType ? searchType.value : "CSR No";
-                const statusKey = statusFilter ? statusFilter.value : "all";
-
-                // 2. Filter the Data (Exactly like the Table View)
+            // --- EXPORT ---
+            document.getElementById('export-btn').addEventListener('click', () => {
+                const query = searchInput.value.toLowerCase().trim();
+                const filterKey = searchType.value;
+                const statusKey = statusFilter.value;
                 const dataToExport = extractedDataList.filter(item => {
-                    // Search Check
                     const val = String(item[filterKey] || "").toLowerCase();
-                    const matchesSearch = val.includes(query);
-                    
-                    // Status Check
-                    let matchesStatus = true;
-                    if(statusKey !== "all") {
-                        const itemStatus = item.status || "Unsolved";
-                        matchesStatus = (itemStatus === statusKey);
-                    }
-
-                    return matchesSearch && matchesStatus;
+                    return val.includes(query) && ((statusKey === "all") ? true : (item.status === statusKey));
                 });
 
-                // 3. Check if we have data
-                if (dataToExport.length === 0) {
-                    return alert("No data matches your current filters!");
-                }
+                if (dataToExport.length === 0) return alert("No data to export!");
 
-                // 4. Define Headers
-                const headers = [
-                    "Status", // Added Status column to export
-                    "NCRP Acknowledgement No.", 
-                    "CSR No", 
-                    "Category", 
-                    "Sub Category",
-                    "Incident Date", 
-                    "Incident Time", 
-                    "Complaint Date", 
-                    "Complaint Name",
-                    "Complaint Address", 
-                    "Complaint Phone No.", 
-                    "Complaint Mail Id",
-                    "Suspect phone No.", 
-                    "Suspect social Media Id", 
-                    "Total Amount Loss", 
-                    "Additional details"
-                ];
-
-                // 5. Build CSV
+                const headers = ["Status", "NCRP Acknowledgement No.", "CSR No", "Category", "Sub Category", "Incident Date", "Incident Time", "Complaint Date", "Complaint Name", "Complaint Address", "Complaint Phone No.", "Complaint Mail Id", "Suspect phone No.","Social Media Platform", "Suspect social Media Id", "Total Amount Loss", "Additional details"];
                 const csvRows = [headers.join(',')];
-                
                 for (const row of dataToExport) {
                     const values = headers.map(header => {
-                        let val;
-                        // Special handling for Status (since it might be undefined in old data)
-                        if (header === "Status") {
-                            val = row.status || "Unsolved";
-                        } else {
-                            val = row[header] || "";
-                        }
-                        
-                        // Clean for CSV (Escape quotes, remove newlines)
+                        let val = (header === "Status") ? (row.status || "Unsolved") : (row[header] || "");
                         const stringVal = String(val).replace(/"/g, '""').replace(/(\r\n|\n|\r)/gm, " ");
                         return `"${stringVal}"`;
                     });
                     csvRows.push(values.join(','));
                 }
-
-                // 6. Download
                 const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
-                const a = document.createElement('a');
-                a.href = window.URL.createObjectURL(blob);
-                
-                // Filename includes the filter name for clarity
-                const filterName = statusKey === "all" ? "All" : statusKey;
-                const date = new Date().toLocaleDateString('en-IN').replace(/\//g, '-');
-                a.download = `NCRP_${filterName}_Cases_${date}.csv`;
-                
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
+                const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob);
+                a.download = `NCRP_${statusKey}_${new Date().toLocaleDateString('en-IN').replace(/\//g, '-')}.csv`;
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
             });
 
-            if(resetBtn) resetBtn.addEventListener('click', () => {
-                fileInput.value = ''; selectedFiles = []; fileNameDisplay.classList.add('hidden'); statusMessage.classList.add('hidden'); progressContainer.classList.add('hidden'); uploadBtn.disabled = true; uploadBtn.classList.add('bg-gray-400', 'cursor-not-allowed'); uploadBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'cursor-pointer'); resetBtn.classList.add('hidden');
-            });
+            // --- LETTER GENERATOR (STRICT) ---
+            // --- LETTER GENERATOR (Fixed Logic) ---
+            window.generateRequestLetter = function() {
+                const data = extractedDataList[currentDetailIndex];
+                const today = new Date().toLocaleDateString('en-IN');
+                
+                // Get clean values
+                const category = (data["Category"] || "").toLowerCase();
+                const totalLoss = parseFloat((data["Total Amount Loss"] || "0").replace(/,/g, ''));
+
+                // --- FIX: BETTER DETECTION LOGIC ---
+                let isFinancial = false;
+
+                // 1. First, check if it is explicitly NON-FINANCIAL
+                if (category.includes("non") || category.includes("harassment") || category.includes("social media") || category.includes("defamation")) {
+                    isFinancial = false;
+                }
+                // 2. If not, check if it is FINANCIAL (or has money loss)
+                else if (category.includes("financial") || category.includes("banking") || totalLoss > 0) {
+                    isFinancial = true;
+                }
+
+                const csr = data["CSR No"] || "____";
+                const ack = data["NCRP Acknowledgement No."] || "";
+                const platform = data["Social Media Platform"] || "[Enter Platform Name]";
+                const suspectId = data["Suspect social Media Id"] || "N/A";
+                const suspectPhone = data["Suspect phone No."] || "N/A";
+
+                let letterHTML = "";
+
+                if (isFinancial) {
+                    // --- BANK FRAUD TEMPLATE ---
+                    letterHTML = `
+                    <html><head><title>Request Letter - Financial</title>
+                    <style>
+                        body{font-family:'Times New Roman';padding:40px;line-height:1.6;max-width:800px;margin:0 auto}
+                        .header{font-weight:bold;margin-bottom:20px}
+                        .table-container{width:100%;border-collapse:collapse;margin:20px 0}
+                        th,td{border:1px solid black;padding:8px;text-align:center}
+                        .btn{display:block;margin-top:20px;padding:10px 20px;background:blue;color:white;border:none;border-radius:5px;cursor:pointer;font-size:14px;}
+                        @media print{.btn{display:none}}
+                    </style>
+                    </head><body contenteditable="true">
+                        <div style="text-align:center;font-weight:bold;margin-bottom:10px;">सत्यमेव जयते</div>
+                        <div class="header">From<br>Inspector of Police,<br>Cyber Crime Police Station,<br>The Nilgiris.</div>
+                        <div class="header">To<br>The Nodal Officer,<br>[ENTER BANK NAME]</div>
+                        
+                        <div style="margin-bottom:20px;">
+                            <strong>Sub:</strong> Financial Fraud - Provide Beneficiary Account details for Investigation - reg.<br>
+                            <strong>Ref:</strong> Nilgiris District Cyber Crime Police Station CSR No. <strong>${csr}</strong>, Dated: ${today}<br>
+                            <strong>NCRP Ack No:</strong> <strong>${ack}</strong>
+                        </div>
+                        
+                        <p>Sir/Madam,<br>
+                        As per the above cited reference, a case of <strong>${data["Category"] || "Online Financial Fraud"}</strong> has been registered. The details of the fraudulent transaction are as follows:</p>
+                        
+                        <table class="table-container">
+                            <thead><tr style="background:#f0f0f0"><th>S.No</th><th>Suspect Mobile / Acc No</th><th>IFSC / Bank</th><th>Loss Amount</th></tr></thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>${suspectPhone} / ${data["Suspect Account No."] || "N/A"}</td>
+                                    <td>[Enter IFSC]</td>
+                                    <td>Rs. ${data["Total Amount Loss"]}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <p>It is requested to provide the following details for the investigation:</p>
+                        <ul>
+                            <li>KYC Details of the Account Holder</li>
+                            <li>Account Statement & Transaction History</li>
+                            <li>Linked Mobile Number & Email ID</li>
+                            <li>IP Logs (Login & Transaction)</li>
+                            <li>ATM/Branch CCTV Footage (if applicable)</li>
+                        </ul>
+                        
+                        <div style="margin-top:60px;float:right;text-align:center;font-weight:bold">
+                            Inspector of Police<br>Cyber Crime Police Station<br>The Nilgiris.
+                        </div>
+                        
+                        <button class="btn" onclick="window.print()">Save as PDF / Print</button>
+                    </body></html>`;
+                } else {
+                    // --- SOCIAL MEDIA TEMPLATE ---
+                    letterHTML = `
+                    <html><head><title>Request Letter - Non-Financial</title>
+                    <style>
+                        body{font-family:'Times New Roman';padding:40px;line-height:1.6;max-width:800px;margin:0 auto}
+                        .header{font-weight:bold;margin-bottom:20px}
+                        .content{margin-bottom:20px;text-align:justify}
+                        ul{padding-left:20px}
+                        li{margin-bottom:5px}
+                        .btn{display:block;margin-top:20px;padding:10px 20px;background:blue;color:white;border:none;border-radius:5px;cursor:pointer;font-size:14px;}
+                        @media print{.btn{display:none}}
+                    </style>
+                    </head><body contenteditable="true">
+                        <div style="text-align:center;font-weight:bold;margin-bottom:10px;">सत्यमेव जयते</div>
+                        <div class="header">From<br>Inspector of Police,<br>Cyber Crime Police Station,<br>The Nilgiris.</div>
+                        <div class="header">To<br>The Nodal Officer,<br><strong>${platform}</strong><br>(Legal / Law Enforcement Response Team)</div>
+                        
+                        <div class="content">
+                            <strong>Sub:</strong> Non-Financial Cyber Crime (${data["Sub Category"] || "Harassment"}) - Preservation of Data & Info Request - reg.<br>
+                            <strong>Ref:</strong> Nilgiris District Cyber Crime Police Station CSR No. <strong>${csr}</strong>, Dated: ${today}<br>
+                            <strong>NCRP Ack No:</strong> <strong>${ack}</strong>
+                        </div>
+                        
+                        <div class="content">
+                            Sir/Madam,<br><br>
+                            A complaint has been received regarding <strong>${data["Category"] || "Non-Financial Fraud"}</strong> involving your platform. 
+                            The suspect is using the following profile/handle to commit the offence:
+                        </div>
+
+                        <div style="border:1px solid #000; padding:10px; margin:20px 0; background:#f9f9f9;">
+                            <strong>Suspect User ID / Handle:</strong> ${suspectId}<br>
+                            <strong>Suspect URL:</strong> ${suspectId.includes('http') ? suspectId : "N/A"}<br>
+                            <strong>Suspect Mobile (if any):</strong> ${suspectPhone}
+                        </div>
+
+                        <p>It is requested to <strong>PRESERVE</strong> and provide the following information immediately for investigation:</p>
+                        <ul>
+                            <li><strong>Basic Subscriber Information (BSI):</strong> Registered Name, Email, Mobile No, and DOB.</li>
+                            <li><strong>IP Logs:</strong> Creation IP and Login IP Logs with Timestamp (UTC).</li>
+                            <li><strong>Device Details:</strong> Device ID, IMEI, MAC Address.</li>
+                            <li><strong>Linked Accounts:</strong> Any other accounts linked to this mobile/email.</li>
+                        </ul>
+                        
+                        <div style="margin-top:60px;float:right;text-align:center;font-weight:bold">
+                            Inspector of Police<br>Cyber Crime Police Station<br>The Nilgiris.
+                        </div>
+                        
+                        <button class="btn" onclick="window.print()">Save as PDF / Print</button>
+                    </body></html>`;
+                }
+
+                const win = window.open('','_blank');
+                win.document.write(letterHTML);
+                win.document.close();
+            };
         });
     </script>
 </body>
-
 </html>
