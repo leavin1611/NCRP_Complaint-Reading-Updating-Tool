@@ -8,7 +8,7 @@ A local offline tool to extract data from NCRP (National Cyber Crime Reporting P
 * **Search & Filter:** Search by CSR/Ack Number and filter by Solved/Unsolved status.
 * **Request Letter Generator:** One-click generation of formal letters to Banks or Social Media platforms.
 * **Offline Database:** Stores all data locally in a SQLite database.
-* **Download:** You can Download the complaints as a excel sheet.
+* **Download As Excel:** You can Download the complaints as a excel sheet.
 
 ## How to Run (No Installation Required)
 
