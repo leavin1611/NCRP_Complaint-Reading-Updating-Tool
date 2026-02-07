@@ -10,7 +10,7 @@ A local offline tool to extract data from NCRP (National Cyber Crime Reporting P
 * **Offline Database:** Stores all data locally in a SQLite database.
 * **Download As Excel:** You can Download the complaints as a excel sheet.
 
-## How to Run (No Installation Required)
+## How to Run (No Prior Technical Knowledge Required)
 
 1.  Download this repository as a ZIP file and extract it.
 2.  Double-click **`start_app.bat`**.
